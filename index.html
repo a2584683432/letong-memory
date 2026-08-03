@@ -980,12 +980,11 @@ hr.dotted {
 <script>
 const STORAGE_KEY = 'huadu_letong_photos_v3';
 
-// ====== 永久照片：把照片放到 photos/ 文件夹，在这里列出文件名 ======
-var PHOTOS_FOLDER_IMAGES = [
-  // '毕业照.jpg',    // ← 把实际照片放到 photos/ 文件夹后，
-  // '运动会.jpg',    //    在这里写上文件名（去掉前面的 //）
-  // '春游合影.jpg'
-];
+// ====== 永久照片：把照片放到 photos/ 文件夹 ======
+var PHOTOS_FOLDER_IMAGES = [];
+for (var _i = 1; _i <= 159; _i++) {
+  PHOTOS_FOLDER_IMAGES.push(_i + '.jpg');
+}
 var photosFolderCache = [];  // 从 photos/ 文件夹加载的照片
 
 // 从 photos/ 文件夹加载照片（永久保存，不会丢失）
@@ -1438,9 +1437,9 @@ function loadSavedMusic() {
 // 把MP3文件放到 music/ 文件夹里，然后在这里列出文件名
 // 例如：'童年.mp3', '同桌的你.mp3'
 var MUSIC_FOLDER_SONGS = [
-  // 'song1.mp3',   // ← 把实际文件名写在这里（去掉前面的 //）
-  // 'song2.mp3',
-  // 'song3.mp3'
+  '【李易峰】【再见】栀子花开MV(MP3_160K).mp3',
+  '侯健 - 蓝天之约.mp3',
+  '梁琮明 - 有你陪伴.mp3'
 ];
 
 function musicGetFullPlaylist() {
@@ -1616,7 +1615,10 @@ function playMusic() {
     localStorage.setItem('huadu_letong_music_last_v3', musicCurrentIndex);
     updateMusicDisplay();
   }).catch(function() {
-    showToast('⚠️ 播放失败，请点击播放按钮重试');
+    // 浏览器阻止自动播放，显示提示
+    document.getElementById('mpPlayBtn').textContent = '▶ 播放';
+    document.getElementById('mpDisplay').textContent = '🎵 点击播放按钮开始音乐（浏览器安全策略需手动触发）';
+    document.getElementById('mpStatus').textContent = '⚠️ 点击播放按钮开始';
   });
 }
 
@@ -1681,6 +1683,18 @@ loadMusicFolderSongs();
 
 // 加载已保存的编辑内容
 loadSavedEdits();
+
+// 浏览器首次点击后自动播放音乐（解决自动播放被拦截的问题）
+var musicAutoPlayDone = false;
+document.addEventListener('click', function() {
+  if (musicAutoPlayDone) return;
+  musicAutoPlayDone = true;
+  var all = musicGetFullPlaylist();
+  if (all.length > 0 && !musicAudio) {
+    musicCurrentIndex = 0;
+    playMusic();
+  }
+}, { once: true });
 </script>
 
 </body>
